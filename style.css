@@ -47,6 +47,17 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
+.restart-button {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: #003e2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
 
 .header {
   background: #003e2f;
