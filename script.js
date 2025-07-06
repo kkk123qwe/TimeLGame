@@ -104,10 +104,17 @@ function createSlot(year) {
       setTimeout(() => slot.classList.remove("wrong"), 800);
       lives--;
       updateLivesDisplay();
-      if (lives === 0) {
-        alert("Game Over! Refresh to play again.");
-        cardPool.innerHTML = "<p>💀 Game Over</p>";
-      }
+     if (lives === 0) {
+  cardPool.innerHTML = "<p> Game Over</p>";
+
+  const restartBtn = document.createElement("button");
+  restartBtn.textContent = "🔁 Restart Game";
+  restartBtn.className = "restart-button";
+  restartBtn.onclick = () => window.location.reload();
+
+  cardPool.appendChild(restartBtn);
+}
+
     }
   });
 
