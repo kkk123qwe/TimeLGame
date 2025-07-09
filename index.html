@@ -90,19 +90,17 @@
         pointer-events: auto;
       }
    
-@media (max-width: 1000px) {
-  .frame-container {
-    transform: scale(4.0);
-    transform-origin: top center;
-  }
-}
+@media (max-width: 768px) {
+        .frame-container {
+          zoom: 2.5; /* 放大 1.5 倍适配小屏幕 */
+        }
+      }
 
-@media (max-width: 480px) {
-  .frame-container {
-    transform: scale(2.8);
-    transform-origin: top center;
-  }
-}
+      @media (max-width: 480px) {
+        .frame-container {
+          zoom: 2.8; /* 手机屏幕上放大更多 */
+        }
+      }
 
       }
     </style>
