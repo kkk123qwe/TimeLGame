@@ -1,231 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Catch the Flowers</title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the Flowers</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      touch-action: manipulation;
+    }
 
-      body {
-        margin: 0;
-        background: black;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 98vh;
-        overflow: hidden;
-      }
+    body {
+      margin: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-      .frame-container {
-        position: relative;
-        width: 600px;
-        height: 900px;
-        background-image: url("backg.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        overflow: hidden;
-      }
+    .frame-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-image: url("backg.png"); /* 用你的背景图名替换 */
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
 
-      #game {
-        position: absolute;
-        top: 90px;
-        left: 60px;
-        width: 480px;
-        height: 743px;
-        overflow: hidden;
-        pointer-events: none;
-      }
+    #game {
+      position: absolute;
+      top: 12%;
+      left: 8%;
+      width: 84%;
+      height: 76%;
+      overflow: hidden;
+      pointer-events: none;
+    }
 
-      #girl {
-        position: absolute;
-        bottom: 0;
-        width: 100px;
-        pointer-events: auto;
-      }
+    #girl {
+      position: absolute;
+      bottom: 0;
+      width: 18%; /* 更大女孩 */
+      pointer-events: auto;
+    }
 
-      .flower {
-        position: absolute;
-        width: 300px;
-        pointer-events: auto;
-      }
+    .flower {
+      position: absolute;
+      width: 38%; /* 更大花朵 */
+      pointer-events: auto;
+    }
 
-      #score,
-      #lives {
-        position: absolute;
-        left: 10px;
-        font-size: 20px;
-        font-family: sans-serif;
-        color: #333;
-        pointer-events: none;
-      }
+    #score,
+    #lives {
+      position: absolute;
+      font-size: clamp(18px, 3.2vw, 30px);
+      font-family: sans-serif;
+      color: #222;
+      z-index: 10;
+      pointer-events: none;
+    }
 
-      #score {
-        top: 10px;
-      }
+    #score {
+      top: 2%;
+      left: 4%;
+    }
 
-      #lives {
-        top: 40px;
-      }
+    #lives {
+      top: 8%;
+      left: 4%;
+    }
 
-      #gameOver {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 32px;
-        color: darkred;
-        display: none;
-        text-align: center;
-        z-index: 10;
-      }
+    #gameOver {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(30px, 6vw, 50px);
+      color: darkred;
+      display: none;
+      text-align: center;
+      z-index: 10;
+    }
 
-      #restartBtn {
-        margin-top: 10px;
-        padding: 8px 16px;
-        font-size: 18px;
-        cursor: pointer;
-        pointer-events: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="frame-container">
-      <div id="game">
-        <div id="score">Score: 0</div>
-        <div id="lives">Lives: ❤️❤️❤️</div>
-        <div id="gameOver">
-          Game Over<br />
-          <button id="restartBtn">Restart</button>
-        </div>
-        <img id="girl" src="suzannewitharm.png" />
+    #restartBtn {
+      margin-top: 12px;
+      padding: 10px 24px;
+      font-size: clamp(16px, 4vw, 28px);
+      cursor: pointer;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="frame-container">
+    <div id="game">
+      <div id="score">Score: 0</div>
+      <div id="lives">Lives: ❤️❤️❤️</div>
+      <div id="gameOver">
+        Game Over<br />
+        <button id="restartBtn">Restart</button>
       </div>
+      <img id="girl" src="suzannewitharm.png" />
     </div>
+  </div>
 
-    <script>
-      const game = document.getElementById("game");
-      const frame = document.querySelector(".frame-container");
-      const girl = document.getElementById("girl");
-      const scoreDisplay = document.getElementById("score");
-      const livesDisplay = document.getElementById("lives");
-      const gameOverScreen = document.getElementById("gameOver");
-      const restartBtn = document.getElementById("restartBtn");
+  <script>
+    const game = document.getElementById("game");
+    const girl = document.getElementById("girl");
+    const scoreDisplay = document.getElementById("score");
+    const livesDisplay = document.getElementById("lives");
+    const gameOverScreen = document.getElementById("gameOver");
+    const restartBtn = document.getElementById("restartBtn");
 
-      const flowerImgs = ["flower1.png", "flower2.png", "flower3.png"];
-      const flowerSize = 300;
-      const girlWidth = 100;
-      const girlHeight = 98;
-      const fallSpeed = 8;
-      const paddingX = 0;
+    const flowerImgs = ["flower1.png", "flower2.png", "flower3.png"];
+    const fallSpeed = 8;
 
-      let score = 0;
-      let lives = 3;
-      let girlX = game.clientWidth / 2 - girlWidth / 2;
-      let gameRunning = true;
+    let score = 0;
+    let lives = 3;
+    let gameRunning = true;
 
+    function getSizes() {
+      return {
+        gameW: game.clientWidth,
+        gameH: game.clientHeight,
+        girlW: girl.clientWidth,
+        girlH: girl.clientHeight,
+        flowerW: game.clientWidth * 0.38
+      };
+    }
+
+    let girlX = 0;
+
+    function moveGirl(x) {
+      if (!gameRunning) return;
+      const rect = game.getBoundingClientRect();
+      const mouseX = x - rect.left;
+      const { gameW, girlW } = getSizes();
+      girlX = Math.min(Math.max(0, mouseX - girlW / 2), gameW - girlW);
       girl.style.left = `${girlX}px`;
+    }
 
-      function updateGirlPosition(mouseX) {
-        if (!gameRunning) return;
-        const newX = Math.min(
-          Math.max(0, mouseX - girlWidth / 2),
-          game.clientWidth - girlWidth
-        );
-        girlX = newX;
-        girl.style.left = `${girlX}px`;
-      }
+    function dropFlower() {
+      if (!gameRunning) return;
 
-      // 鼠标控制
-      frame.addEventListener("mousemove", (e) => {
-        const rect = game.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        updateGirlPosition(x);
-      });
+      const { gameW, gameH, girlW, girlH, flowerW } = getSizes();
 
-      // 触屏控制
-      frame.addEventListener(
-        "touchmove",
-        (e) => {
-          if (!gameRunning) return;
-          e.preventDefault();
-          const rect = game.getBoundingClientRect();
-          const x = e.touches[0].clientX - rect.left;
-          updateGirlPosition(x);
-        },
-        { passive: false }
-      );
+      const flower = document.createElement("img");
+      flower.src = flowerImgs[Math.floor(Math.random() * flowerImgs.length)];
+      flower.className = "flower";
+      game.appendChild(flower);
 
-      function dropFlower() {
-        if (!gameRunning) return;
+      let x = Math.random() * (gameW - flowerW);
+      let y = -flowerW;
+      flower.style.left = `${x}px`;
+      flower.style.top = `${y}px`;
 
-        const flower = document.createElement("img");
-        flower.src = flowerImgs[Math.floor(Math.random() * flowerImgs.length)];
-        flower.className = "flower";
-        game.appendChild(flower);
+      const interval = setInterval(() => {
+        if (!gameRunning) {
+          flower.remove();
+          clearInterval(interval);
+          return;
+        }
 
-        let x = Math.random() * (game.clientWidth - flowerSize);
-        let y = -flowerSize;
-        flower.style.left = `${x}px`;
+        y += fallSpeed;
         flower.style.top = `${y}px`;
 
-        const interval = setInterval(() => {
-          if (!gameRunning) {
-            flower.remove();
-            clearInterval(interval);
-            return;
+        const flowerCenterX = x + flowerW / 2;
+        const flowerCenterY = y + flowerW / 2;
+
+        const extraHeight = girlH * 0.4;
+        const girlTop = gameH - girlH - extraHeight;
+        const girlBottom = gameH;
+        const girlRight = girlX + girlW;
+        const girlLeft = girlX;
+
+        const collision =
+          flowerCenterY >= girlTop &&
+          flowerCenterY <= girlBottom &&
+          flowerCenterX >= girlLeft &&
+          flowerCenterX <= girlRight;
+
+        const missed = y > gameH;
+
+        if (collision) {
+          score++;
+          scoreDisplay.textContent = `Score: ${score}`;
+          flower.remove();
+          clearInterval(interval);
+        } else if (missed) {
+          lives--;
+          updateLives();
+          flower.remove();
+          clearInterval(interval);
+          if (lives <= 0) {
+            gameOver();
           }
+        }
+      }, 16);
+    }
 
-          y += fallSpeed;
-          flower.style.top = `${y}px`;
+    function updateLives() {
+      livesDisplay.textContent = `Lives: ${"❤️".repeat(lives)}`;
+    }
 
-          const flowerCenterX = x + flowerSize / 2;
-          const flowerCenterY = y + flowerSize / 2;
+    function gameOver() {
+      gameRunning = false;
+      gameOverScreen.style.display = "block";
+    }
 
-          const extraHeight = 60;
-          const girlTop = game.clientHeight - girlHeight - extraHeight;
-          const girlLeft = girlX + paddingX;
-          const girlRight = girlX + girlWidth - paddingX;
+    function restartGame() {
+      score = 0;
+      lives = 3;
+      gameRunning = true;
+      scoreDisplay.textContent = "Score: 0";
+      updateLives();
+      gameOverScreen.style.display = "none";
+    }
 
-          const collision =
-            flowerCenterY >= girlTop &&
-            flowerCenterX >= girlLeft &&
-            flowerCenterX <= girlRight;
+    restartBtn.addEventListener("click", restartGame);
 
-          const missed = y > game.clientHeight;
-
-          if (collision) {
-            score++;
-            scoreDisplay.textContent = `Score: ${score}`;
-            flower.remove();
-            clearInterval(interval);
-          } else if (missed) {
-            lives--;
-            livesDisplay.textContent = `Lives: ${"❤️".repeat(lives)}`;
-            flower.remove();
-            clearInterval(interval);
-            if (lives === 0) {
-              gameRunning = false;
-              gameOverScreen.style.display = "block";
-            }
-          }
-        }, 16);
+    // 绑定鼠标和触摸控制
+    const container = document.querySelector(".frame-container");
+    container.addEventListener("mousemove", (e) => moveGirl(e.clientX));
+    container.addEventListener("touchmove", (e) => {
+      if (e.touches.length > 0) {
+        moveGirl(e.touches[0].clientX);
       }
+    });
 
-      setInterval(dropFlower, 600);
-
-      restartBtn.addEventListener("click", () => {
-        score = 0;
-        lives = 3;
-        gameRunning = true;
-        scoreDisplay.textContent = `Score: ${score}`;
-        livesDisplay.textContent = `Lives: ${"❤️".repeat(lives)}`;
-        gameOverScreen.style.display = "none";
-      });
-    </script>
-  </body>
+    setInterval(dropFlower, 800);
+    updateLives();
+  </script>
+</body>
 </html>
+
 
 <!-- <!DOCTYPE html>
 <html lang="en">
